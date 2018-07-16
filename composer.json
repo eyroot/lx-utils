@@ -1,0 +1,23 @@
+{
+	"name" : "eyroot/lx-simple-storage",
+	"description" : "A collection of various php utils",
+	"type" : "library",
+	"keywords" : [
+		"php",
+		"utils"
+	],
+	"license" : "GPL-3.0-only",
+	"authors" : [{
+			"name" : "eyroot",
+			"role" : "Developer"
+		}
+	],
+	"autoload" : {
+		"psr-4" : {
+			"Lx\\" : "src/"
+		}
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "^6.5"
+	}
+}
