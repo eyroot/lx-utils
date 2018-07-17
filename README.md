@@ -4,8 +4,11 @@ Recursively clean up all files in a PHP project by assigning clean up tasks.
 Clean up tasks available:
 - clean up undefined constants in array square brakets (beginning with PHP 7.2 unquoted 
 array keys produce the Warning "Use of undefined constant ..." and in future versions this will 
-trigger a hard error) - this task will automatically quote all strings which are undefined constants 
-used inside square brackets for the array syntax
+trigger a hard error). This task will automatically quote all strings which are undefined constants 
+used inside square brackets for the array syntax. Observation: this fix only targets array usage 
+like $a[key1] which will be automatically transformed into $a['key1']. The clean up process does not 
+parse and compute a list of defined constants in your project, in order to white-list them for usage 
+without quotes.
 
 ## Notice
 
