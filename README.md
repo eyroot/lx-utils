@@ -23,6 +23,7 @@ composer install
 
 * Run unit testing:
 ```
+mkdir testing/tmp
 cd testing/
 ../vendor/bin/phpunit
 ```
