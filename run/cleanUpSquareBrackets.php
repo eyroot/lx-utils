@@ -1,5 +1,7 @@
 <?php
 
+//@TODO: replace this with proper console in future versions
+
 require(__DIR__ . '/../vendor/autoload.php');
 
 if (!(isset($_SERVER['argv'][1]) && strlen($_SERVER['argv'][1]) > 0)) {

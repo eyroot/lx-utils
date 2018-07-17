@@ -2,11 +2,12 @@
 
 ## Notice
 
-When running on a real project, please backup your project files first!!! :-) just a safeguard to make sure that what you are doing matches what you're expecting, the code of the library has no flaws ;) sooo, be still & relaxed :)
+When running on a real project, it's a good idea to backup the project files first!
+Just to be sure that what you are doing matches what you're expecting.
 
 ## Usage
 
-
+php run/cleanUpSquareBrackets.php /path/you/want/to/clean/up
 
 ## Development set-up
 
