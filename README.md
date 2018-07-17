@@ -8,7 +8,7 @@ trigger a hard error). This task will automatically quote all strings which are 
 used inside square brackets for the array syntax. Observation: this fix only targets array usage 
 like $a[key1] which will be automatically transformed into $a['key1']. The clean up process does not 
 parse and compute a list of defined constants in your project, in order to white-list them for usage 
-without quotes.
+without quotes in all possible contexts.
 
 ## Notice
 
