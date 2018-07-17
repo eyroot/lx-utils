@@ -18,11 +18,35 @@ just to be sure that what you are doing matches what you're expecting.
 
 ## Usage
 
+* Install
+
 ```
 git clone https://github.com/eyroot/lx-utils lx-utils
 cd lx-utils
 composer install --no-dev
-php run/cleanUpSquareBrackets.php /path/you/want/to/clean/up
+```
+
+* Console command
+
+```
+$ php run/cleanUpSquareBrackets.php /path/you/want/to/clean/up
+```
+
+* Project/Library
+
+```
+use Lx\Utils\CodeCleanUp\CodeCleanUp;
+
+$result = (new CodeCleanUp())
+    ->addFilePath($pathToCleanUp)
+    ->addFileExtension('php')
+    ->addTask(CodeCleanUp::TASK_QUOTE_UNDEFINED_CONSTANTS_IN_SQUARE_BRACKETS)
+    ->run()
+;
+
+// Available information:
+// $result->filesChanged - list of files which were changed
+// $result->errors - list of errors
 ```
 
 ## Development set-up
