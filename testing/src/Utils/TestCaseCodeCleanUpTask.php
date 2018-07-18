@@ -2,7 +2,7 @@
 
 namespace LxTesting\Utils;
 
-use Lx\Utils\CodeCleanUp\Task\TaskInterface;
+use Lx\Utils\CodeCleanUp\Tasks\TaskInterface;
 
 class TestCaseCodeCleanUpTask extends TestCaseGeneric
 {
@@ -39,7 +39,7 @@ class TestCaseCodeCleanUpTask extends TestCaseGeneric
             -4
         );
 
-        $className = 'Lx\Utils\CodeCleanUp\Task\\' . $this->taskName;
+        $className = 'Lx\\Utils\\CodeCleanUp\\Tasks\\Task\\' . $this->taskName;
         $this->taskInstance = new $className();
 
         $pathDataTest = LX_TESTING_UTILS_CODECLEANUP_TESTING_DATA_DIR_TASKS . '/' . $this->taskName;
@@ -51,7 +51,8 @@ class TestCaseCodeCleanUpTask extends TestCaseGeneric
                     $this->contentTest[] = array(
                         'original' => file_get_contents($pathDataTest . '/' . $file),
                         'expected' => file_get_contents($pathDataTest . '/' .
-                            str_replace('.', '_expected.', $file))
+                            str_replace('.', '_expected.', $file)),
+                        'fileName' => substr($file, 0, strpos($file, '.'))
                     );
                 }
         }

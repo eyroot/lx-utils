@@ -1,6 +1,6 @@
 <?php
 
-namespace Lx\Utils\CodeCleanUp\Task;
+namespace Lx\Utils\CodeCleanUp\Tasks;
 
 interface TaskInterface
 {
@@ -10,4 +10,9 @@ interface TaskInterface
      * @return string - processed file content
      */
     public function process($data);
+
+    /**
+     * @see \Lx\Utils\CodeCleanUp\Tasks\TaskAbstract::setOptions()
+     */
+    public function setOptions($options);
 }

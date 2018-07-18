@@ -6,8 +6,8 @@ use Lx\Utils\UtilsException;
 
 class CodeCleanUp
 {
-    const TASK_QUOTE_UNDEFINED_CONSTANTS_IN_SQUARE_BRACKETS
-        = 'QuoteUndefinedConstantsInSquareBrackets';
+    const TASK_QUOTE_UNDEFINED_CONSTANTS_IN_SQUARE_BRACKETS = 'QuoteUndefinedConstantsInSquareBrackets';
+
     const TASK_TASK_FILE_DOC_COMMENT_ADD = 'FileDocCommentAdd';
 
     /**
@@ -54,11 +54,16 @@ class CodeCleanUp
     }
 
     /**
+     * The option names are defined in Tasks/TaskOptions/{$taskName}Option
      * @param string $task
+     * @param array $options - optional, options as name value pairs
      */
-    public function addTask($task)
+    public function addTask($task, $options = array())
     {
-        $this->tasks[] = $task;
+        $this->tasks[] = array(
+            'task' => $task,
+            'options' => $options
+        );
         return $this;
     }
 
@@ -123,8 +128,9 @@ class CodeCleanUp
         $dataOriginal = file_get_contents($path);
         $data = $dataOriginal;
         foreach ($this->tasks as $task) {
-            $className = 'Lx\\Utils\\CodeCleanUp\\Task\\' . $task;
+            $className = 'Lx\\Utils\\CodeCleanUp\\Tasks\\Task\\' . $task['task'];
             $object = new $className();
+            $object->setOptions($task['options']);
             $data = $object->process($data);
         }
         return $this->saveData($path, $dataOriginal, $data);

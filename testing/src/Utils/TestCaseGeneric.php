@@ -32,7 +32,11 @@ class TestCaseGeneric extends TestCase
         $dirTesting = $dirContainer . '/' . $namespace;
 
         // cleanup
-        shell_exec('rm -rf ' . $dirTesting);
+        if (is_dir($dirTesting)) {
+            if(!rmdir($dirTesting)) {
+                shell_exec('rm -rf ' . $dirTesting);
+            }
+        }
 
         // create directory
         if (!mkdir($dirTesting)) {

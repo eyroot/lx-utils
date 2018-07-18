@@ -1,5 +1,7 @@
 # lx-utils
 
+<b>Code Clean Up</b>
+
 Recursively clean up all files in a PHP project by assigning clean up tasks.
 Clean up tasks available:
 - clean up undefined constants in array square brakets (beginning with PHP 7.2 unquoted 
@@ -9,6 +11,7 @@ used inside square brackets for the array syntax. Observation: this fix only tar
 like $a[key1] which will be automatically transformed into $a['key1']. The clean up process DOES NOT 
 parse and compute a list of defined constants in your project, in order to white-list them for usage 
 without quotes in all possible contexts.
+- add custom doc block headers to PHP files
 
 ## Notice
 

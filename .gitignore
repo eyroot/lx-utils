@@ -1,5 +1,5 @@
 vendor/
-testing/tmp/
+testing/data/Utils/tmp
 
 .buildpath
 .project

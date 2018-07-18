@@ -61,6 +61,9 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
 
     public function setUp()
     {
+        // remove dirs and files
+        $this->removeNestedDirsAndFiles();
+
         $this->initDirTestingTmp('code-cleanup');
         $this->dirTesting = $this->getDirTestingTmp('code-cleanup');
     }
@@ -85,7 +88,9 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
     private function removeNestedDirsAndFiles()
     {
         foreach ($this->testNestedFiles as $filePath) {
-            unlink($this->dirTesting . '/' . $filePath);
+            if (is_file($file = $this->dirTesting . '/' . $filePath)) {
+                unlink($file);
+            }
         }
 
         $dirs = $this->testNestedDirs;
@@ -94,7 +99,9 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
         });
 
         foreach ($dirs as $dirPath) {
-            rmdir($this->dirTesting . '/' . $dirPath);
+            if (is_dir($dir = $this->dirTesting . '/' . $dirPath)) {
+                rmdir($dir);
+            }
         }
     }
 
@@ -123,21 +130,23 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
         $this->assertEquals(count($this->testNestedFiles), count($result->filesChanged));
         $this->assertEquals(0, count($result->errors));
 
-        // create dirs and files
+        // remove dirs and files
         $this->removeNestedDirsAndFiles();
     }
 
     public function testSingleFile()
     {
+        $testFile = $this->dirTesting . '/file1.php';
+
         // create file
         file_put_contents(
-            $this->dirTesting . '/file1.php',
+            $testFile,
             $this->testNestedFileContents['content1']['original']
         );
 
         // clean up
         $result = (new CodeCleanUp())
-            ->addFilePath($this->dirTesting . '/file1.php')
+            ->addFilePath($testFile)
             ->addFileExtension('php')
             ->addTask(CodeCleanUp::TASK_QUOTE_UNDEFINED_CONSTANTS_IN_SQUARE_BRACKETS)
             ->run()
@@ -146,10 +155,13 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
         // check results
         $this->assertEquals(
             $this->testNestedFileContents['content1']['expected'],
-            file_get_contents($this->dirTesting . '/file1.php')
+            file_get_contents($testFile)
         );
         $this->assertEquals(1, count($result->filesChanged));
         $this->assertEquals(0, count($result->errors));
+
+        // remove test file
+        unlink($testFile);
     }
 
     public function testInvalidPathException()

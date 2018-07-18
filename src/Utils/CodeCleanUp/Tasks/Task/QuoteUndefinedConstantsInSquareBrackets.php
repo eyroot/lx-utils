@@ -1,12 +1,15 @@
 <?php
 
-namespace Lx\Utils\CodeCleanUp\Task;
+namespace Lx\Utils\CodeCleanUp\Tasks\Task;
 
-class QuoteUndefinedConstantsInSquareBrackets implements TaskInterface
+use Lx\Utils\CodeCleanUp\Tasks\TaskInterface;
+use Lx\Utils\CodeCleanUp\Tasks\TaskAbstract;
+
+class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements TaskInterface
 {
     /**
      * {@inheritDoc}
-     * @see \Lx\Utils\CodeCleanUp\Task\TaskInterface::process()
+     * @see \Lx\Utils\CodeCleanUp\Tasks\TaskInterface::process()
      */
     public function process($data)
     {

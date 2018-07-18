@@ -1,0 +1,5 @@
+<?php
+
+/**
+ * Doc block text
+ */
