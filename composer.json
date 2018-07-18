@@ -1,5 +1,5 @@
 {
-	"name" : "eyroot/lx-simple-storage",
+	"name" : "eyroot/lx-utils",
 	"description" : "A collection of various php utils",
 	"type" : "library",
 	"keywords" : [
@@ -15,6 +15,11 @@
 	"autoload" : {
 		"psr-4" : {
 			"Lx\\" : "src/"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"LxTesting\\" : "testing/src/"
 		}
 	},
 	"require-dev" : {

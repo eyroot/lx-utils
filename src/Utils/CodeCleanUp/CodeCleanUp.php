@@ -3,12 +3,12 @@
 namespace Lx\Utils\CodeCleanUp;
 
 use Lx\Utils\UtilsException;
-use Lx\Utils\CodeCleanUp\CodeCleanUpResult;
 
 class CodeCleanUp
 {
     const TASK_QUOTE_UNDEFINED_CONSTANTS_IN_SQUARE_BRACKETS
         = 'QuoteUndefinedConstantsInSquareBrackets';
+    const TASK_TASK_FILE_DOC_COMMENT_ADD = 'FileDocCommentAdd';
 
     /**
      * @var string[]

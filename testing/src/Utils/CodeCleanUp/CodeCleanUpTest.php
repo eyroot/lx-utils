@@ -1,14 +1,22 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use LxTesting\Utils\TestCaseGeneric;
 
 use Lx\Utils\CodeCleanUp\CodeCleanUp;
 
-class CodeCleanUpTest extends TestCase
+class CodeCleanUpTest extends TestCaseGeneric
 {
+    /**
+     * Testing directory
+     * @var string
+     */
     private $dirTesting = null;
 
-    private $dirs = array(
+    /**
+     * Nested dirs structure
+     * @var array
+     */
+    private $testNestedDirs = array(
         'dir1',
         'dir1/dir2',
         'dir1/dir2/dir3',
@@ -17,7 +25,12 @@ class CodeCleanUpTest extends TestCase
         'dir6',
         'dir6/dir7'
     );
-    private $files = array(
+
+    /**
+     * Nested files structure
+     * @var array
+     */
+    private $testNestedFiles = array(
         'dir1/file1.php',
         'dir1/dir2/file2.php',
         'dir1/dir2/dir3/file1.php',
@@ -30,7 +43,12 @@ class CodeCleanUpTest extends TestCase
         'dir6/dir7/file2.php',
         'dir6/dir7/file3.php'
     );
-    private $fileContents = array(
+
+    /**
+     * Nested files content
+     * @var array
+     */
+    private $testNestedFileContents = array(
         'content1' => array(
             'original' => '<?php
 $a [UNDEFINED_CONSTANT] = 1;
@@ -43,40 +61,49 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
 
     public function setUp()
     {
-        // prerequisites
-        $dirParent = __DIR__ . '/../../../tmp';
-        if (!is_dir($dirParent)) {
-            throw new \Exception('Testing directory [' .$dirParent. '] must exist!');
-        }
-        $this->dirTesting = $dirParent . '/testing';
-
-        // cleanup
-        $this->cleanUpTestDirectory();
+        $this->initDirTestingTmp('code-cleanup');
+        $this->dirTesting = $this->getDirTestingTmp('code-cleanup');
     }
 
-    private function cleanUpTestDirectory()
+    /**
+     * Create nested dir structure with files & content for testing
+     */
+    private function createNestedDirsAndFiles()
     {
-        shell_exec('rm -rf ' . $this->dirTesting . ' && mkdir ' . $this->dirTesting);
-    }
-
-    private function createTestingNestedDirectoriesAndFiles()
-    {
-        // create nested dir structure with files & content for testing
-        foreach ($this->dirs as $dirPath) {
+        foreach ($this->testNestedDirs as $dirPath) {
             mkdir($this->dirTesting . '/' . $dirPath);
         }
-        foreach ($this->files as $filePath) {
+        foreach ($this->testNestedFiles as $filePath) {
             file_put_contents($this->dirTesting . '/' . $filePath,
-                $this->fileContents['content1']['original']);
+                $this->testNestedFileContents['content1']['original']);
         }
     }
 
-    public function testNestedDirectoriesAndFiles()
+    /**
+     * Remove nested dir structure with files & content for testing
+     */
+    private function removeNestedDirsAndFiles()
+    {
+        foreach ($this->testNestedFiles as $filePath) {
+            unlink($this->dirTesting . '/' . $filePath);
+        }
+
+        $dirs = $this->testNestedDirs;
+        usort($dirs, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        foreach ($dirs as $dirPath) {
+            rmdir($this->dirTesting . '/' . $dirPath);
+        }
+    }
+
+    public function testNestedDirsAndFiles()
     {
         // create dirs and files
-        $this->createTestingNestedDirectoriesAndFiles();
+        $this->createNestedDirsAndFiles();
 
-        // clean up
+        // run some clean up tasks
         $result = (new CodeCleanUp())
             ->addFilePath($this->dirTesting)
             ->addFileExtension('php')
@@ -84,22 +111,29 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
             ->run()
         ;
 
-        // check results
-        foreach ($this->files as $filePath) {
+        // check result values
+        foreach ($this->testNestedFiles as $filePath) {
             $this->assertEquals(
-                $this->fileContents['content1']['expected'],
+                $this->testNestedFileContents['content1']['expected'],
                 file_get_contents($this->dirTesting . '/' . $filePath)
             );
         }
 
-        $this->assertEquals(count($this->files), count($result->filesChanged));
+        // check result statistics
+        $this->assertEquals(count($this->testNestedFiles), count($result->filesChanged));
         $this->assertEquals(0, count($result->errors));
+
+        // create dirs and files
+        $this->removeNestedDirsAndFiles();
     }
 
     public function testSingleFile()
     {
         // create file
-        file_put_contents($this->dirTesting . '/file1.php', $this->fileContents['content1']['original']);
+        file_put_contents(
+            $this->dirTesting . '/file1.php',
+            $this->testNestedFileContents['content1']['original']
+        );
 
         // clean up
         $result = (new CodeCleanUp())
@@ -111,7 +145,7 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
 
         // check results
         $this->assertEquals(
-            $this->fileContents['content1']['expected'],
+            $this->testNestedFileContents['content1']['expected'],
             file_get_contents($this->dirTesting . '/file1.php')
         );
         $this->assertEquals(1, count($result->filesChanged));
@@ -129,6 +163,4 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
             ->run()
         ;
     }
-
-
 }

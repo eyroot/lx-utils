@@ -23,7 +23,7 @@
 
 <testsuites>
   <testsuite name="ts1">
-    <directory>suite/</directory>
+    <directory>src/</directory>
   </testsuite>
 </testsuites>
 
@@ -39,4 +39,3 @@
 </logging>
 
 </phpunit>
-
