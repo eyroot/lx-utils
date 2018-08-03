@@ -27,6 +27,12 @@ class FileDocCommentAddTest extends TestCaseCodeCleanUpTask
         ),
         'file5' => array(
             FileDocCommentAddOption::TEXT => 'Sample text'
+        ),
+        'file6' => array(
+            FileDocCommentAddOption::TEXT => 'And the forgotten
+multiline
+comment,
+which is naturally supported as well'
         )
     );
 

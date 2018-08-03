@@ -10,6 +10,8 @@ class CodeCleanUp
 
     const TASK_TASK_FILE_DOC_COMMENT_ADD = 'FileDocCommentAdd';
 
+    const TASK_TASK_FILE_DOC_COMMENT_REMOVE = 'FileDocCommentRemove';
+
     /**
      * @var string[]
      */
@@ -34,6 +36,29 @@ class CodeCleanUp
      * @var string[]
      */
     private $softErrorsDuringRun = array();
+
+    /**
+     * The content of files changed
+     *   (not really written to disk)
+     *   during dry run
+     * @var mixed[]
+     */
+    private $filesChangedContentDryRun = array();
+
+    /**
+     * Dry run flag
+     * @var bool
+     */
+    private $dryRun = false;
+
+    /**
+     * Enable dry run
+     */
+    public function enableDryRun()
+    {
+        $this->dryRun = true;
+        return $this;
+    }
 
     /**
      * @param string $path
@@ -75,6 +100,7 @@ class CodeCleanUp
     {
         $this->filesChangedDuringRun = array();
         $this->softErrorsDuringRun = array();
+        $this->filesChangedContentDryRun = array();
 
         foreach ($this->filePaths as $path) {
             $this->runOnPath($path);
@@ -83,6 +109,7 @@ class CodeCleanUp
         $result = new CodeCleanUpResult();
         $result->filesChanged = $this->filesChangedDuringRun;
         $result->errors = $this->softErrorsDuringRun;
+        $result->filesChangedContentDryRun = $this->filesChangedContentDryRun;
 
         return $result;
     }
@@ -146,12 +173,19 @@ class CodeCleanUp
     private function saveData($path, $dataOriginal, $dataProcessed)
     {
         if (md5($dataOriginal) != md5($dataProcessed)) {
-            if (false !== file_put_contents($path, $dataProcessed)) {
-                $this->filesChangedDuringRun[] = $path;
-                return true;
+            if ($this->dryRun) {
+                $this->filesChangedContentDryRun[$path] = array(
+                    'original' => $dataOriginal,
+                    'processed' => $dataProcessed
+                );
             } else {
-                $this->softErrorsDuringRun[] = 'Could not write new data to path ['.$path.']';
-                return false;
+                if (false !== file_put_contents($path, $dataProcessed)) {
+                    $this->filesChangedDuringRun[] = $path;
+                    return true;
+                } else {
+                    $this->softErrorsDuringRun[] = 'Could not write new data to path ['.$path.']';
+                    return false;
+                }
             }
         }
         return true;

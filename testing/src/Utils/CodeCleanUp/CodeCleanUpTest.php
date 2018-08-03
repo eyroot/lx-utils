@@ -1,7 +1,8 @@
 <?php
 
-use LxTesting\Utils\TestCaseGeneric;
+namespace LxTesting\Utils\CodeCleanUp;
 
+use LxTesting\Utils\TestCaseGeneric;
 use Lx\Utils\CodeCleanUp\CodeCleanUp;
 
 class CodeCleanUpTest extends TestCaseGeneric
