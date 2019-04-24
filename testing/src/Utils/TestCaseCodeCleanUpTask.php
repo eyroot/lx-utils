@@ -52,7 +52,8 @@ class TestCaseCodeCleanUpTask extends TestCaseGeneric
                         'original' => file_get_contents($pathDataTest . '/' . $file),
                         'expected' => file_get_contents($pathDataTest . '/' .
                             str_replace('.', '_expected.', $file)),
-                        'fileName' => substr($file, 0, strpos($file, '.'))
+                        'fileName' => substr($file, 0, strpos($file, '.')),
+                        'filePath' => $pathDataTest . '/' . $file
                     );
                 }
         }
