@@ -101,7 +101,9 @@ $a [\'UNDEFINED_CONSTANT\'] = 1;
 
         foreach ($dirs as $dirPath) {
             if (is_dir($dir = $this->dirTesting . '/' . $dirPath)) {
-                rmdir($dir);
+                if (!rmdir($dir)) {
+                    echo 'rmdir failed, directory not empty, unclean shut down; you can manually run: rm -rf testing/data/Utils/tmp/code-cleanup';
+                }
             }
         }
     }

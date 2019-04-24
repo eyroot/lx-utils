@@ -3,6 +3,7 @@
 namespace Lx\Utils\CodeCleanUp;
 
 use Lx\Utils\UtilsException;
+use Lx\Utils\CodeCleanUp\Tools\CollectDefinedConstantsFromPath;
 
 class CodeCleanUp
 {
@@ -11,6 +12,8 @@ class CodeCleanUp
     const TASK_TASK_FILE_DOC_COMMENT_ADD = 'FileDocCommentAdd';
 
     const TASK_TASK_FILE_DOC_COMMENT_REMOVE = 'FileDocCommentRemove';
+
+    const RUNTIME_DATA_KEY_CONSTANTS = 'defined_constants';
 
     /**
      * @var string[]
@@ -50,6 +53,12 @@ class CodeCleanUp
      * @var bool
      */
     private $dryRun = false;
+
+    /**
+     * Runtime data
+     * @var array
+     */
+    private $runTimeData = array();
 
     /**
      * Enable dry run
@@ -103,7 +112,8 @@ class CodeCleanUp
         $this->filesChangedContentDryRun = array();
 
         foreach ($this->filePaths as $path) {
-            $this->runOnPath($path);
+            $this->computeRunTimeData($path);
+            $this->runOnPath($path, $path);
         }
 
         $result = new CodeCleanUpResult();
@@ -115,11 +125,35 @@ class CodeCleanUp
     }
 
     /**
+     * Compute runtime data
+     * @param string $path
+     * @return void
+     */
+    private function computeRunTimeData($path)
+    {
+        $keyPath = $this->computeKeyForPath($path);
+        $this->runTimeData[$keyPath] = array();
+        $this->runTimeData[$keyPath][self::RUNTIME_DATA_KEY_CONSTANTS] =
+            CollectDefinedConstantsFromPath::collect($path);
+    }
+
+    /**
+     * Normalize key path value
+     * @param string $path
+     * @return string
+     */
+    private function computeKeyForPath($path)
+    {
+        return md5($path);
+    }
+
+    /**
      * Run all scheduled tasks for one path, recursively if needed
      * @param string $path
+     * @param string $pathRoot
      * @throws UtilsException
      */
-    private function runOnPath($path)
+    private function runOnPath($path, $pathRoot)
     {
         if (!is_file($path) && !is_dir($path)) {
             throw new UtilsException('Invalid path specified: ['.$path.']');
@@ -128,11 +162,11 @@ class CodeCleanUp
         if (is_dir($path)) {
             foreach (scandir($path) as $file) {
                 if ('.' !== $file && '..' !== $file) {
-                    $this->runOnPath($path . '/' . $file);
+                    $this->runOnPath($path . '/' . $file, $pathRoot);
                 }
             }
         } elseif (is_file($path) && $this->isFileEligible($path)) {
-            $this->processFileData($path);
+            $this->processFileData($path, $pathRoot);
         }
     }
 
@@ -148,9 +182,10 @@ class CodeCleanUp
     /**
      * Process file data for all defined tasks
      * @param string $path
+     * @param string $pathRoot
      * @return bool
      */
-    private function processFileData($path)
+    private function processFileData($path, $pathRoot)
     {
         $dataOriginal = file_get_contents($path);
         $data = $dataOriginal;
@@ -158,6 +193,9 @@ class CodeCleanUp
             $className = 'Lx\\Utils\\CodeCleanUp\\Tasks\\Task\\' . $task['task'];
             $object = new $className();
             $object->setOptions($task['options']);
+            $object->setDefinedConstants(
+                $this->runTimeData[$this->computeKeyForPath($pathRoot)][self::RUNTIME_DATA_KEY_CONSTANTS]
+            );
             $data = $object->process($data);
         }
         return $this->saveData($path, $dataOriginal, $data);
