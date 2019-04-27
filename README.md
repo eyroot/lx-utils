@@ -5,13 +5,16 @@
 Recursively clean up all files in a PHP project by assigning clean up tasks.
 Clean up tasks available:
 - add/remove custom doc block headers for PHP files
-- clean up undefined constants in array square brakets (beginning with PHP 7.2 unquoted 
-array keys produce the Warning "Use of undefined constant ..." and in future versions this will 
-trigger a hard error). This task will automatically quote all strings which are undefined constants 
-used inside square brackets for the array syntax. Observation: this fix only targets array usage 
-like $a[key1] which will be automatically transformed into $a['key1']. The clean up process also 
-parses and computes a list of defined constants in the project/root path specified, 
-in order to white-list them for usage without quotes as array keys.
+- clean up undefined constants in array square brakets 
+    - beginning with PHP 7.2 unquoted array keys produce the Warning 
+      "Use of undefined constant ..." and in future versions this will 
+      trigger a hard error)
+    - automatically quote all strings which are undefined constants 
+      used inside square brackets as array keys
+    - old style array usage like $a[key1] will be automatically transformed into $a['key1']
+    - also parse and compute a list of defined constants in the project/root path specified, 
+      and whitelist them them for usage without quotes as array keys
+    - add curly brackets around arrays used inside double quote and heredoc string definitions
 
 ## Notice
 

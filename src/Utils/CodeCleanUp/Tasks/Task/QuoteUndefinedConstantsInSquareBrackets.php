@@ -13,12 +13,14 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
      */
     public function process($data)
     {
-        $spacerChars = ' ' . chr(9);
-        $spacer = '[' . $spacerChars . ']*';
-        $pattern = '`(\$[a-zA-Z0-9_]+' . $spacer . ')(\[[\$a-zA-Z0-9_\[\]' . $spacerChars . ']+\])`';
         $definedConstants = $this->getDefinedConstants();
 
-        return preg_replace_callback($pattern, function($matches) use ($spacer, $definedConstants) {
+        $spacerChars = ' ' . chr(9);
+        $spacer = '[' . $spacerChars . ']*';
+
+        // append single quotes around variables where they are missing
+        $pattern = '`(\$[a-zA-Z0-9_]+' . $spacer . ')(\[[\$a-zA-Z0-9_\[\]' . $spacerChars . ']+\])`';
+        $text = preg_replace_callback($pattern, function($matches) use ($spacer, $definedConstants) {
             $pattern = '`(\[' . $spacer . ')([a-zA-Z0-9_]+)(' . $spacer . '\])`';
 
             $keys = preg_replace_callback($pattern, function($matches) use ($definedConstants) {
@@ -40,5 +42,39 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
 
             return $matches[1] . $keys;
         }, $data);
+
+        // fix - add "{", "}" - array definitions (old-style) inside double quoted strings (nested-quotes)
+        $pattern = '`"[^"]+"`U';
+        $text = preg_replace_callback($pattern, function($matches) {
+            return $this->fixAddCurlyBrackets($matches[0]);
+        }, $text);
+
+        // fix - add "{", "}" - array definitions (old-style) inside heredoc strings
+        $pattern = '`\<\<\<([a-zA-Z0-9]+)'.chr(10).'.+'.chr(10).'([a-zA-Z0-9]+);`sU';
+        $text = preg_replace_callback($pattern, function($matches) {
+            if ($matches[1] === $matches[2]) { // only if heredoc tag names match
+                return $this->fixAddCurlyBrackets($matches[0]);
+            }
+            return $matches[0];
+        }, $text);
+
+        return $text;
+    }
+
+    /**
+     * Add curly brackets (inside double quoted strings and heredoc definitions)
+     * @param string $text
+     * @return string
+     */
+    private function fixAddCurlyBrackets($text)
+    {
+        $pattern = '`(.{1})(\$[a-zA-Z0-9_]+\[\'.+\'\])(.{1})`';
+        return preg_replace_callback($pattern, function($matches) {
+            $arrayString = $matches[2];
+            if ('{' !== $matches[1] && '}' !== $matches[3]) {
+                $arrayString = '{' . $arrayString . '}';
+            }
+            return $matches[1] . $arrayString . $matches[3];
+        }, $text);
     }
 }
