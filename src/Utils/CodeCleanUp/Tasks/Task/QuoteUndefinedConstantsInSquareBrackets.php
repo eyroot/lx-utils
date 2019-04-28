@@ -44,7 +44,7 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
         }, $data);
 
         // fix - add "{", "}" - array definitions (old-style) inside double quoted strings (nested-quotes)
-        $pattern = '`"[^"]+"`U';
+        $pattern = '`"[^"]*"`U';
         $text = preg_replace_callback($pattern, function($matches) {
             return $this->fixAddCurlyBrackets($matches[0]);
         }, $text);

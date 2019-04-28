@@ -3,6 +3,8 @@
 $array = [];
 $array['key'] = 'value';
 
+echo "string without " . "" . " variables";
+
 echo "I am an old coding style variable: $array[key], but still a variable";
 echo "Another example $array[key] here";
 echo "Another example $array[key]";
