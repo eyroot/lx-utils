@@ -4,6 +4,9 @@ $array = [];
 $array['key'] = 'value';
 
 echo "string without " . "" . " variables";
+echo "escaped quote example\"";
+echo "another escaped quote example\\\"";
+
 
 echo "I am an old coding style variable: {$array['key']}, but still a variable";
 echo "Another example {$array['key']} here";

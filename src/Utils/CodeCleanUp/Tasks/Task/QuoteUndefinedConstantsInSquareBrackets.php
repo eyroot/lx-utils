@@ -4,6 +4,7 @@ namespace Lx\Utils\CodeCleanUp\Tasks\Task;
 
 use Lx\Utils\CodeCleanUp\Tasks\TaskInterface;
 use Lx\Utils\CodeCleanUp\Tasks\TaskAbstract;
+use Lx\Utils\CodeCleanUp\Tools\StringReplaceSkip;
 
 class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements TaskInterface
 {
@@ -13,6 +14,14 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
      */
     public function process($data)
     {
+        $stringReplaceSkip = new StringReplaceSkip(
+            'quotes',
+            array(
+                '\"'
+            )
+        );
+        $data = $stringReplaceSkip->textEncode($data);
+
         $definedConstants = $this->getDefinedConstants();
 
         $spacerChars = ' ' . chr(9);
@@ -58,12 +67,16 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
             return $matches[0];
         }, $text);
 
+        $text = $stringReplaceSkip->textDecode($text);
+
         return $text;
     }
 
     /**
      * Add curly brackets (inside double quoted strings and heredoc definitions)
+     *
      * @param string $text
+     *
      * @return string
      */
     private function fixAddCurlyBrackets($text)

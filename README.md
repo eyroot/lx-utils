@@ -58,17 +58,20 @@ $result = (new CodeCleanUp())
 ## Development set-up
 
 * Clone project locally:
+
 ```
 git clone https://github.com/eyroot/lx-utils lx-utils
 cd lx-utils
 ```
 
 * Set-up project and install composer deps:
+
 ```
 composer install
 ```
 
 * Run unit testing:
+
 ```
 mkdir -p testing/data/Utils/tmp
 cd testing/
@@ -76,6 +79,7 @@ cd testing/
 ```
 
 * Check the code coverage of tests by opening in browser:
+
 ```
 file:///tmp/coverage-lx-utils/index.html
 ```
