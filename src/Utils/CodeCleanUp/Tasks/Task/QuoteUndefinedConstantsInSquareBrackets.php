@@ -28,7 +28,7 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
         $spacer = '[' . $spacerChars . ']*';
 
         // append single quotes around variables where they are missing
-        $pattern = '`(\$[a-zA-Z0-9_]+' . $spacer . ')(\[[\$a-zA-Z0-9_\[\]' . $spacerChars . ']+\])`';
+        $pattern = '`(\$[a-zA-Z0-9_]+' . $spacer . ')(\[[\$a-zA-Z0-9_#\'\[\]' . $spacerChars . ']+\])`';
         $text = preg_replace_callback($pattern, function($matches) use ($spacer, $definedConstants) {
             $pattern = '`(\[' . $spacer . ')([a-zA-Z0-9_]+)(' . $spacer . '\])`';
 
@@ -53,7 +53,7 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
         }, $data);
 
         // fix - add "{", "}" - array definitions (old-style) inside double quoted strings (nested-quotes)
-        $pattern = '`"[^"]*"`U';
+            $pattern = '`(\'[^\']*\'|\?>.*<\?(=|php))(*SKIP)(*F)|".*"`Us';
         $text = preg_replace_callback($pattern, function($matches) {
             return $this->fixAddCurlyBrackets($matches[0]);
         }, $text);
@@ -81,13 +81,9 @@ class QuoteUndefinedConstantsInSquareBrackets extends TaskAbstract implements Ta
      */
     private function fixAddCurlyBrackets($text)
     {
-        $pattern = '`(.{1})(\$[a-zA-Z0-9_]+\[\'.+\'\])(.{1})`';
+            $pattern = '`(?<!\{)\$[a-zA-Z0-9_]+(?:\[\'[^\']+\'\])+(?!\})`s';
         return preg_replace_callback($pattern, function($matches) {
-            $arrayString = $matches[2];
-            if ('{' !== $matches[1] && '}' !== $matches[3]) {
-                $arrayString = '{' . $arrayString . '}';
-            }
-            return $matches[1] . $arrayString . $matches[3];
+            return '{' . $matches[0] . '}';
         }, $text);
     }
 }
